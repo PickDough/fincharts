@@ -482,3 +482,8 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# PostgreSQL data directory
+pgdata
+
+.vscode

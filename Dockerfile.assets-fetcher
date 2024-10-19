@@ -1,0 +1,19 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+WORKDIR /App
+
+# Copy everything
+COPY ./assets-fetcher ./assets-fetcher
+COPY ./db-context ./db-context
+COPY ./financial-data-provider ./financial-data-provider
+
+WORKDIR /App/assets-fetcher
+# Restore as distinct layers
+RUN dotnet restore
+# Build and publish a release
+RUN dotnet publish -c Release -o ./out
+
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/runtime:8.0
+WORKDIR /App/assets-fetcher
+COPY --from=build-env /App/assets-fetcher/out .
+ENTRYPOINT ["dotnet", "assets-fetcher.dll"]
