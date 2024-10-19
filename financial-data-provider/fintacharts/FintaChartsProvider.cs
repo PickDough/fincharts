@@ -2,10 +2,11 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using app_core.domain;
+using app_core.service;
 using AutoMapper;
 using DotNext;
 
-namespace financial_data_provider.providers.fintacharts;
+namespace financial_data_provider.fintacharts;
 
 public class FintaChartsProvider(string apiAddress, string username, string password)
     : IAssetProvider

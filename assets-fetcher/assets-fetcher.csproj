@@ -3,7 +3,6 @@
   <ItemGroup>
     <ProjectReference Include="..\financial-data-provider\financial-data-provider.csproj" />
     <ProjectReference Include="..\db-context\db-context.csproj" />
-    <ProjectReference Include="..\domain\domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

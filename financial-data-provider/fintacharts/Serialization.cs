@@ -1,6 +1,6 @@
 using System;
 
-namespace financial_data_provider.providers.fintacharts;
+namespace financial_data_provider.fintacharts;
 
 internal struct ApiKeyResponse
 {

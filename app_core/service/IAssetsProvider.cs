@@ -1,7 +1,7 @@
 ﻿using app_core.domain;
 using DotNext;
 
-namespace financial_data_provider;
+namespace app_core.service;
 
 public interface IAssetProvider
 {

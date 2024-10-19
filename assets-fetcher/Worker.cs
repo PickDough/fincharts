@@ -1,6 +1,5 @@
 using app_core.repository;
-using DotNext;
-using financial_data_provider;
+using app_core.service;
 
 namespace assets_fetcher;
 

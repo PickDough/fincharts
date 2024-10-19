@@ -1,9 +1,37 @@
+using app_core.domain;
+using app_core.repository;
+using db_context;
+using db_context.entity;
+using db_context.repository;
+using financial_data_provider;
+using financial_data_provider.fintacharts;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Configuration.AddEnvironmentVariables(prefix: "DBCONTEXT_");
+builder.Configuration.AddEnvironmentVariables(prefix: "FINTACHARTS_");
+
+builder.Services.AddDbContextPool<AssetsFetcherContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetValue<string>("DATABASE_URL")!)
+);
+builder.Services.AddSingleton<IAssetRepository, AssetRepository>();
+
+builder.Services.AddSingleton<FintaChartsProvider>(opts => new FintaChartsProvider(
+    builder.Configuration.GetValue<string>("API_URL")!,
+    builder.Configuration.GetValue<string>("USERNAME")!,
+    builder.Configuration.GetValue<string>("PASSWORD")!
+));
+
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.CreateMap<Asset, AssetEntity>();
+});
 
 var app = builder.Build();
 
@@ -16,41 +44,4 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing",
-    "Bracing",
-    "Chilly",
-    "Cool",
-    "Mild",
-    "Warm",
-    "Balmy",
-    "Hot",
-    "Sweltering",
-    "Scorching",
-};
-
-app.MapGet(
-        "/weatherforecast",
-        () =>
-        {
-            var forecast = Enumerable
-                .Range(1, 5)
-                .Select(index => new WeatherForecast(
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-                .ToArray();
-            return forecast;
-        }
-    )
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
-
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

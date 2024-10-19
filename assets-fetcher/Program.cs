@@ -1,12 +1,11 @@
 ﻿using app_core.domain;
 using app_core.repository;
+using app_core.service;
 using assets_fetcher;
-using AutoMapper;
 using db_context;
 using db_context.entity;
 using db_context.repository;
-using financial_data_provider;
-using financial_data_provider.providers.fintacharts;
+using financial_data_provider.fintacharts;
 using Microsoft.EntityFrameworkCore;
 
 var builder = Host.CreateApplicationBuilder(args);
