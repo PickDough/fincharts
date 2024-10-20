@@ -8,4 +8,6 @@ public class AssetsFetcherContext(DbContextOptions<AssetsFetcherContext> options
     : DbContext(options)
 {
     public DbSet<AssetEntity> Assets { get; set; }
+
+    public DbSet<ProviderEntity> Providers { get; set; }
 }

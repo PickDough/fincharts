@@ -1,4 +1,4 @@
-﻿using app_core.domain;
+﻿using app_core.dto;
 using DotNext;
 
 namespace app_core.service;

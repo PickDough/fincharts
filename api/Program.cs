@@ -1,5 +1,8 @@
-using app_core.domain;
+using System.Reflection;
+using System.Text.Json.Serialization;
+using app_core.dto;
 using app_core.repository;
+using app_core.service;
 using db_context;
 using db_context.entity;
 using db_context.repository;
@@ -9,39 +12,78 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-builder.Configuration.AddEnvironmentVariables(prefix: "DBCONTEXT_");
-builder.Configuration.AddEnvironmentVariables(prefix: "FINTACHARTS_");
-
-builder.Services.AddDbContextPool<AssetsFetcherContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetValue<string>("DATABASE_URL")!)
-);
-builder.Services.AddSingleton<IAssetRepository, AssetRepository>();
-
-builder.Services.AddSingleton<FintaChartsProvider>(opts => new FintaChartsProvider(
-    builder.Configuration.GetValue<string>("API_URL")!,
-    builder.Configuration.GetValue<string>("USERNAME")!,
-    builder.Configuration.GetValue<string>("PASSWORD")!
-));
-
-builder.Services.AddAutoMapper(cfg =>
-{
-    cfg.CreateMap<Asset, AssetEntity>();
-});
+ConfigureApi(builder);
+InjectAppDependencies(builder);
+ConfigureMapping(builder);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var db = scope.ServiceProvider.GetRequiredService<AssetsFetcherContext>();
+    db.Database.Migrate();
 }
 
-app.UseHttpsRedirection();
+app.UseSwagger();
+app.UseSwaggerUI();
+app.MapControllers();
 
+Console.WriteLine();
 app.Run();
+
+static void InjectAppDependencies(WebApplicationBuilder builder)
+{
+    builder.Configuration.AddEnvironmentVariables(prefix: "DBCONTEXT_");
+    builder.Configuration.AddEnvironmentVariables(prefix: "FINTACHARTS_");
+
+    builder.Services.AddDbContextPool<AssetsFetcherContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetValue<string>("DATABASE_URL")!)
+    );
+    builder.Services.AddTransient<IAssetRepository, AssetRepository>();
+
+    builder.Services.AddSingleton<IAssetsHistoricalPriceProvider>(opts => new FintaChartsProvider(
+        builder.Configuration.GetValue<string>("API_URL")!,
+        builder.Configuration.GetValue<string>("USERNAME")!,
+        builder.Configuration.GetValue<string>("PASSWORD")!,
+        opts.GetRequiredService<ILogger<FintaChartsProvider>>()
+    ));
+}
+
+static void ConfigureApi(WebApplicationBuilder builder)
+{
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen(opt =>
+    {
+        var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        opt.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+    });
+    builder
+        .Services.AddControllers()
+        .AddJsonOptions(opt =>
+        {
+            opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
+    ;
+    builder.Services.AddRouting(options => options.LowercaseUrls = true);
+
+    builder.Services.AddTransient<PriceService>();
+}
+
+static void ConfigureMapping(WebApplicationBuilder builder)
+{
+    builder.Services.AddAutoMapper(cfg =>
+    {
+        cfg.CreateMap<AssetEntity, Asset>()
+            .ConvertUsing(entity => new Asset(
+                entity.Id,
+                entity.Symbol,
+                entity.Kind,
+                entity.Description,
+                entity.Currency,
+                entity.BaseCurrency
+            )
+            {
+                Providers = entity.Providers.Select(p => new Provider(p.Name)).ToList(),
+            });
+    });
+}

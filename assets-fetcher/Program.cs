@@ -1,4 +1,4 @@
-﻿using app_core.domain;
+﻿using app_core.dto;
 using app_core.repository;
 using app_core.service;
 using assets_fetcher;
@@ -20,7 +20,7 @@ builder.Services.AddSingleton(
     (_) =>
         new AssetsFetcherContext(
             new DbContextOptionsBuilder<AssetsFetcherContext>()
-                .UseNpgsql(builder.Configuration.GetConnectionString("AssetsFetcherContext")!)
+                .UseNpgsql(builder.Configuration.GetValue<string>("DATABASE_URL"))
                 .Options
         )!
 );
@@ -29,12 +29,14 @@ builder.Services.AddSingleton<IAssetRepository, AssetRepository>();
 builder.Services.AddSingleton<IAssetProvider, FintaChartsProvider>(opts => new FintaChartsProvider(
     builder.Configuration.GetValue<string>("API_URL")!,
     builder.Configuration.GetValue<string>("USERNAME")!,
-    builder.Configuration.GetValue<string>("PASSWORD")!
+    builder.Configuration.GetValue<string>("PASSWORD")!,
+    opts.GetRequiredService<ILogger<FintaChartsProvider>>()
 ));
 
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.CreateMap<Asset, AssetEntity>();
+    cfg.CreateMap<Provider, ProviderEntity>();
 });
 
 var host = builder.Build();

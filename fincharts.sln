@@ -11,7 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "financial-data-provider", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "db-context", "db-context\db-context.csproj", "{43CD81BE-910D-4C97-84B6-2DB2DE02923C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "app_core", "app_core\app_core.csproj", "{E3BD3A3E-330D-4E16-8D7A-7609D42B46AD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "app_core", "app-core\app-core.csproj", "{E3BD3A3E-330D-4E16-8D7A-7609D42B46AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{9E305267-0572-4F2E-ADB3-F4B4F4989E12}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{E3BD3A3E-330D-4E16-8D7A-7609D42B46AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3BD3A3E-330D-4E16-8D7A-7609D42B46AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3BD3A3E-330D-4E16-8D7A-7609D42B46AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E305267-0572-4F2E-ADB3-F4B4F4989E12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E305267-0572-4F2E-ADB3-F4B4F4989E12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E305267-0572-4F2E-ADB3-F4B4F4989E12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E305267-0572-4F2E-ADB3-F4B4F4989E12}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

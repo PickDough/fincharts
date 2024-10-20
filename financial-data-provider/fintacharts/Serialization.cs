@@ -28,4 +28,20 @@ internal struct Instrument
     public string Description { get; set; }
     public string Currency { get; set; }
     public string? BaseCurrency { get; set; }
+    public Dictionary<string, object> Mappings { get; set; }
+}
+
+internal struct CountBack
+{
+    public List<Bar> Data { get; set; }
+}
+
+internal struct Bar
+{
+    public DateTime T { get; set; }
+    public double O { get; set; }
+    public double H { get; set; }
+    public double L { get; set; }
+    public double C { get; set; }
+    public int V { get; set; }
 }

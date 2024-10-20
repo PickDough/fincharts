@@ -1,12 +1,15 @@
 using System;
 
-namespace app_core.domain;
+namespace app_core.dto;
 
 public record Asset(
-    string Id,
+    Guid Id,
     string Symbol,
     string Kind,
     string Description,
     string Currency,
     string? BaseCurrency
-);
+)
+{
+    public List<Provider> Providers { get; set; } = [];
+}

@@ -16,6 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\app_core\app_core.csproj" />
+    <ProjectReference Include="..\app-core\app-core.csproj" />
   </ItemGroup>
 </Project>
