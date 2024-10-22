@@ -33,7 +33,7 @@ curl -X GET "http://localhost:8080/api/assets?page=1&perPage=10"
 
 ```bash
 # Historical price
-curl -X GET "http://localhost:8080/api/Assets/054dc5aa-7d4e-45b5-abea-11cb24823ce4/oanda/count-back?interval=1&periodicity=Minute&count=10" -H "accept: */*"
+curl -X GET "http://localhost:8080/api/assets/054dc5aa-7d4e-45b5-abea-11cb24823ce4/oanda/count-back?interval=1&periodicity=Minute&count=10" -H "accept: */*"
 ```
 
 #### WebSocket
