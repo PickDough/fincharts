@@ -15,7 +15,7 @@ A .NET Core app that provides assets realtime as well as historical prices.
 ### Running the App
 
 ```bash
-docker-compose up
+docker compose up
 ```
 
 ### Testing the App
