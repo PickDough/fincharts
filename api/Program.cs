@@ -6,7 +6,6 @@ using app_core.service;
 using db_context;
 using db_context.entity;
 using db_context.repository;
-using financial_data_provider;
 using financial_data_provider.fintacharts;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,8 +26,8 @@ using (var scope = app.Services.CreateScope())
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapControllers();
+app.UseWebSockets();
 
-Console.WriteLine();
 app.Run();
 
 static void InjectAppDependencies(WebApplicationBuilder builder)
@@ -41,12 +40,20 @@ static void InjectAppDependencies(WebApplicationBuilder builder)
     );
     builder.Services.AddTransient<IAssetRepository, AssetRepository>();
 
-    builder.Services.AddSingleton<IAssetsHistoricalPriceProvider>(opts => new FintaChartsProvider(
+    builder.Services.AddSingleton(opts => new FintaChartsProvider(
         builder.Configuration.GetValue<string>("API_URL")!,
         builder.Configuration.GetValue<string>("USERNAME")!,
         builder.Configuration.GetValue<string>("PASSWORD")!,
         opts.GetRequiredService<ILogger<FintaChartsProvider>>()
     ));
+    builder.Services.AddSingleton<IAssetsHistoricalPriceProvider>(opts =>
+        opts.GetService<FintaChartsProvider>()!
+    );
+    builder.Services.AddSingleton<IAssetRealtimePriceProvider>(opts =>
+        opts.GetService<FintaChartsProvider>()!
+    );
+    builder.Services.AddTransient<AssetService>();
+    builder.Services.AddTransient<PriceService>();
 }
 
 static void ConfigureApi(WebApplicationBuilder builder)
@@ -65,8 +72,6 @@ static void ConfigureApi(WebApplicationBuilder builder)
         });
     ;
     builder.Services.AddRouting(options => options.LowercaseUrls = true);
-
-    builder.Services.AddTransient<PriceService>();
 }
 
 static void ConfigureMapping(WebApplicationBuilder builder)

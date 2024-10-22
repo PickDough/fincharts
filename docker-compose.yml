@@ -11,28 +11,26 @@ services:
       - FINTACHARTS_USERNAME=r_test@fintatech.com
       - FINTACHARTS_PASSWORD=kisfiz-vUnvy9-sopnyv
     depends_on:
-      db:
-        condition: service_healthy
+      assets-fetcher:
+        condition: service_completed_successfully
     networks:
       - default
     ports:
       - "8080:8080"
     restart: always
-    volumes:
-      - ${HOME}/.aspnet/https:/https/
-  # assets-fetcher:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.assets-fetcher
-  #   environment:
-  #     - >
-  #       DBCONTEXT_DATABASE_URL=User ID=fincharts_user;Password=fincharts_pass;Host=db;Port=5432;Database=fincharts_db;
-  #     - FINTACHARTS_API_URL=https://platform.fintacharts.com
-  #     - FINTACHARTS_USERNAME=r_test@fintatech.com
-  #     - FINTACHARTS_PASSWORD=kisfiz-vUnvy9-sopnyv
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy
+  assets-fetcher:
+    build:
+      context: .
+      dockerfile: Dockerfile.assets-fetcher
+    environment:
+      - >
+        DBCONTEXT_DATABASE_URL=User ID=fincharts_user;Password=fincharts_pass;Host=db;Port=5432;Database=fincharts_db;
+      - FINTACHARTS_API_URL=https://platform.fintacharts.com
+      - FINTACHARTS_USERNAME=r_test@fintatech.com
+      - FINTACHARTS_PASSWORD=kisfiz-vUnvy9-sopnyv
+    depends_on:
+      db:
+        condition: service_healthy
   db:
     image: postgres
     environment:

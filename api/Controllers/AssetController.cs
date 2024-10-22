@@ -14,28 +14,26 @@ public class AssetsController : ControllerBase
     /// <summary>
     /// Get paginated assets.
     /// </summary>
-    /// <param name="assetRepository">The asset repository.</param>
+    /// <param name="assetService">The asset repository.</param>
     /// <param name="perPage">The number of assets per page. Defaults to 100.</param>
     /// <param name="page">The page number. Defaults to 1.</param>
     [HttpGet]
     [ProducesResponseType<IEnumerable<Asset>>(200)]
     [ProducesErrorResponseType(typeof(string))]
     public async Task<IActionResult> GetAssets(
-        [FromServices] IAssetRepository assetRepository,
+        [FromServices] AssetService assetService,
         [FromQuery] int perPage = 100,
         [FromQuery] int page = 1
     )
     {
-        var (totalPages, assets) = await assetRepository.GetAssetsPaginated(perPage, page);
-        if (totalPages < page)
-        {
-            return BadRequest($"Page {page} does not exist. Total pages: {totalPages}");
-        }
+        var assetsResult = await assetService.GetAssetsPaginated(perPage, page);
+        if (!assetsResult.TryGet(out var assetsPaginated))
+            return BadRequest($"Page {page} does not exist.");
         return Ok(
             new
             {
-                Pagination = new { CurrentPage = page, TotalPages = totalPages },
-                Assets = assets,
+                Pagination = new { CurrentPage = page, TotalPages = assetsPaginated.totalPages },
+                Assets = assetsPaginated.assets,
             }
         );
     }

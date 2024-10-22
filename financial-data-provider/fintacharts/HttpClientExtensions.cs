@@ -6,7 +6,7 @@ using DotNext;
 
 namespace financial_data_provider.fintacharts;
 
-internal static class ClientHelpers
+internal static class HttpClientExtensions
 {
     public static async Task<Result<HttpResponseMessage>> SendAsyncWithTimeout(
         this HttpClient client,
@@ -47,8 +47,8 @@ internal static class ClientHelpers
         return Result.FromValue(client);
     }
 
-    private static async Task<Result<string>> GetApiKey(
-        HttpClient client,
+    public static async Task<Result<string>> GetApiKey(
+        this HttpClient client,
         string username,
         string password
     )

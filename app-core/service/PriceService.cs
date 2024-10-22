@@ -1,13 +1,12 @@
 using System;
 using app_core.dto;
-using app_core.repository;
 using DotNext;
 
 namespace app_core.service;
 
 public class PriceService(
     IAssetsHistoricalPriceProvider historicalPriceProvider,
-    IAssetRepository assetRepository
+    AssetService assetService
 )
 {
     public async Task<Result<AssetHistoricalPrice>> GetAssetHistoricalPrices(
@@ -18,17 +17,9 @@ public class PriceService(
         int Count
     )
     {
-        var assetResult = await assetRepository.GetAsset(assetId);
+        var assetResult = await assetService.GetAssetByIdAndProvider(assetId, provider);
         if (!assetResult.TryGet(out var asset))
-            return Result.FromException<AssetHistoricalPrice>(new Exception("Failed to get asset"));
-
-        if (!asset.Providers.Contains(provider))
-            return Result.FromException<AssetHistoricalPrice>(
-                new Exception(
-                    "Provider not found. Allowed providers: "
-                        + asset.Providers.Aggregate("", (str, prov) => $"{str}{prov.Name} ")
-                )
-            );
+            return Result.FromException<AssetHistoricalPrice>(assetResult.Error!);
 
         var prices = await historicalPriceProvider.GetAssetHistoricalPrices(
             asset,
